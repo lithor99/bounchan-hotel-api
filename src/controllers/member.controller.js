@@ -13,9 +13,9 @@ exports.create = async (req, res) => {
 };
 
 exports.login = (req, res) => {
-  const phoneNumber = req.body.phoneNumber;
+  const email = req.body.email;
   const password = req.body.password;
-  Member.findOne({ where: { phoneNumber: phoneNumber, password: password } })
+  Member.findOne({ where: { email: email, password: password } })
     .then((data) => {
       if (data) {
         const payload = {
@@ -24,7 +24,7 @@ exports.login = (req, res) => {
           lastName: data.lastName,
           phoneNumber: data.phoneNumber,
           email: data.email,
-          deviceToken: data.deviceToken,
+          deviceToken: data.deviceToken ?? "",
         };
         const token = jwt.sign(payload, process.env.SECRET_KEY, {
           expiresIn: "180d",
@@ -60,8 +60,24 @@ exports.findOne = (req, res) => {
     });
 };
 
+exports.checkEmail = (req, res) => {
+  const { email } = req.params;
+  Member.findOne({ where: { email: email } })
+    .then((data) => {
+      if (data) {
+        return res.status(201).json({ result: data });
+      } else {
+        return res.status(200).json({ result: data });
+      }
+    })
+    .catch((error) => {
+      return res.status(400).json({ result: error });
+    });
+};
+
 exports.update = (req, res) => {
   const id = req.params.id;
+  console.log(req.body);
   Member.update({ ...req.body }, { where: { id: id } })
     .then((data) => {
       return res.status(200).json({ result: data });
@@ -85,6 +101,8 @@ exports.updatePassword = (req, res) => {
           .catch((error) => {
             return res.status(400).json({ result: error });
           });
+      } else {
+        return res.status(202).json({ result: "Old password is incorrect" });
       }
     })
     .catch((error) => {
@@ -93,12 +111,12 @@ exports.updatePassword = (req, res) => {
 };
 
 exports.resetPassword = (req, res) => {
-  const phoneNumber = req.body.phoneNumber;
+  const email = req.body.email;
   const newPassword = req.body.newPassword;
-  Member.update(
-    { password: newPassword },
-    { where: { phoneNumber: phoneNumber } }
-  )
+  console.log("resetPassword");
+  console.log(email, newPassword);
+  console.log("resetPassword");
+  Member.update({ password: newPassword }, { where: { email: email } })
     .then((data) => {
       return res.status(200).json({ result: data });
     })

@@ -13,9 +13,9 @@ exports.create = async (req, res) => {
 };
 
 exports.login = (req, res) => {
-  const phoneNumber = req.body.phoneNumber;
+  const email = req.body.email;
   const password = req.body.password;
-  Staff.findOne({ where: { phoneNumber: phoneNumber, password: password } })
+  Staff.findOne({ where: { email: email, password: password } })
     .then((data) => {
       if (data) {
         const payload = {
@@ -24,7 +24,7 @@ exports.login = (req, res) => {
           lastName: data.lastName,
           phoneNumber: data.phoneNumber,
           email: data.email,
-          deviceToken: data.deviceToken,
+          deviceToken: data.deviceToken ?? "",
         };
         const token = jwt.sign(payload, process.env.SECRET_KEY, {
           expiresIn: "120d",
@@ -61,6 +61,9 @@ exports.findOne = (req, res) => {
 
 exports.update = (req, res) => {
   const id = req.params.id;
+  console.log("----------------------------");
+  console.log({ ...req.body });
+  console.log("----------------------------");
   Staff.update({ ...req.body }, { where: { id: id } })
     .then((data) => {
       return res.status(200).json({ result: data });
@@ -84,6 +87,8 @@ exports.updatePassword = (req, res) => {
           .catch((error) => {
             return res.status(400).json({ result: error });
           });
+      } else {
+        return res.status(202).json({ result: "Old password is incorrect" });
       }
     })
     .catch((error) => {
@@ -92,12 +97,9 @@ exports.updatePassword = (req, res) => {
 };
 
 exports.resetPassword = (req, res) => {
-  const phoneNumber = req.body.phoneNumber;
+  const email = req.body.email;
   const newPassword = req.body.newPassword;
-  Staff.update(
-    { password: newPassword },
-    { where: { phoneNumber: phoneNumber } }
-  )
+  Staff.update({ password: newPassword }, { where: { email: email } })
     .then((data) => {
       return res.status(200).json({ result: data });
     })

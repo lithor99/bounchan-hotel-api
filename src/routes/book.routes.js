@@ -7,6 +7,8 @@ module.exports = (app) => {
   app.put("/book/detail/:id", verifyToken, controller.updateBookDetail);
   app.put("/book/check-in/:bookId", verifyToken, controller.checkIn);
   app.put("/book/check-out/:bookId", verifyToken, controller.checkOut);
+  app.post("/book/manual", verifyToken, controller.manualBook);
+  app.put("/book/cancel/:bookId", verifyToken, controller.cancelBook);
   app.get("/book", controller.findAll);
   app.get("/book/member/:id", controller.findByMember);
   app.get("/book/:id", controller.findOne);

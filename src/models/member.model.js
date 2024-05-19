@@ -25,10 +25,12 @@ const Member = sequelize.define(
     phoneNumber: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: true,
     },
     email: {
       type: DataTypes.STRING,
       allowNull: true,
+      unique: true,
     },
     image: {
       type: DataTypes.TEXT,
@@ -41,6 +43,11 @@ const Member = sequelize.define(
     deviceToken: {
       type: DataTypes.STRING,
       allowNull: true,
+    },
+    memberType: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 1, // 0 : normal, 1: member
     },
     blocked: {
       type: DataTypes.INTEGER,

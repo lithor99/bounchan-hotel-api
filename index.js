@@ -62,7 +62,9 @@ require("./src/routes/room.type.routes")(app);
 require("./src/routes/room.image.routes")(app);
 require("./src/routes/room.routes")(app);
 require("./src/routes/book.routes")(app);
-// require("./src/routes/report.routes")(app);
+require("./src/routes/send.mail.routes")(app);
+require("./src/routes/otp.routes")(app);
+require("./src/routes/report.routes")(app);
 const port = process.env.PORT || 8888;
 
 app.listen(port, () => {

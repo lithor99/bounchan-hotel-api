@@ -25,10 +25,12 @@ const Staff = sequelize.define(
     phoneNumber: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: true,
     },
     email: {
       type: DataTypes.STRING,
       allowNull: true,
+      unique: true,
     },
     image: {
       type: DataTypes.TEXT,
