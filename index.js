@@ -4,6 +4,11 @@ const bodyParser = require("body-parser");
 require("dotenv").config();
 const admin = require("firebase-admin");
 const formidable = require("formidable");
+const {
+  sendCheckInNotification,
+  sendCheckOutNotification,
+} = require("./src/functions/send.notification");
+const schedule = require("node-schedule");
 
 const serviceAccount = require("./serviceAccount.json");
 
@@ -14,6 +19,12 @@ app.use(bodyParser.json());
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   storageBucket: "gs://bounchan-app.appspot.com", // Replace this with your Firebase Storage bucket URL
+});
+
+//send notification to email when time is 10:00 AM
+schedule.scheduleJob("0 10 * * *", () => {
+  sendCheckInNotification();
+  sendCheckOutNotification();
 });
 
 const bucket = admin.storage().bucket();

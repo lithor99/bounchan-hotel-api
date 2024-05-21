@@ -3,7 +3,6 @@ const Member = require("../models/member.model");
 const Book = require("../models/book.model");
 const BookDetail = require("../models/book.detail.model");
 const { Op } = require("sequelize");
-const { pushNotificationToStaff } = require("../functions/push.notification");
 
 exports.create = (req, res) => {
   const { id } = req.payload;
@@ -36,7 +35,6 @@ exports.create = (req, res) => {
           );
         }
       }
-      pushNotificationToStaff("ແຈ້ງເຕືອນ", "ມີການຈອງຫ້ອງຈາກລູກຄ້າ");
       return res.status(200).json({ result: data });
     })
     .catch((error) => {
