@@ -7,6 +7,7 @@ const formidable = require("formidable");
 const {
   sendCheckInNotification,
   sendCheckOutNotification,
+  cancelBookingAutomatic,
 } = require("./src/functions/send.notification");
 const schedule = require("node-schedule");
 
@@ -21,10 +22,19 @@ admin.initializeApp({
   storageBucket: "gs://bounchan-app.appspot.com", // Replace this with your Firebase Storage bucket URL
 });
 
-//send notification to email when time is 10:00 AM
+//send check in notification to email when time is 10:00 by 24 hours format
 schedule.scheduleJob("0 10 * * *", () => {
-  sendCheckInNotification();
-  sendCheckOutNotification();
+  // sendCheckInNotification();
+});
+
+//send check out notification to email when time is 12:00 by 24 hours format
+schedule.scheduleJob("0 12 * * *", () => {
+  // sendCheckOutNotification();
+});
+
+//cancel booking auto and send email when time is 23:30  by 24 hours format
+schedule.scheduleJob("30 23 * * *", () => {
+  // cancelBookingAutomatic();
 });
 
 const bucket = admin.storage().bucket();

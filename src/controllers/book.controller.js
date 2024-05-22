@@ -48,7 +48,6 @@ exports.findAll = (req, res) => {
   Book.belongsTo(Member, { foreignKey: "memberId" });
   if (status) {
     if (startDate && endDate) {
-      console.log("================= 1");
       Book.findAndCountAll({
         include: [Member],
         where: {
@@ -65,7 +64,6 @@ exports.findAll = (req, res) => {
           return res.status(400).json({ result: error });
         });
     } else {
-      console.log("================= 2");
       Book.findAndCountAll({
         include: [Member],
         where: {
@@ -81,7 +79,6 @@ exports.findAll = (req, res) => {
     }
   } else {
     if (startDate && endDate) {
-      console.log("================= 3");
       Book.findAndCountAll({
         include: [Member],
         where: {
@@ -97,7 +94,6 @@ exports.findAll = (req, res) => {
           return res.status(400).json({ result: error });
         });
     } else {
-      console.log("================= 4");
       Book.findAndCountAll({
         include: [Member],
       })
