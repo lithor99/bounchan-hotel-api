@@ -1,12 +1,10 @@
 const Room = require("../models/room.model");
 const RoomType = require("../models/room.type.model");
 const RoomImage = require("../models/room.image.model");
+const { Op } = require("sequelize");
 
 exports.create = (req, res) => {
   const { images } = req.body;
-  console.log("--------------------");
-  console.log(req.body);
-  console.log("--------------------");
   Room.create({ ...req.body })
     .then(async (data) => {
       for (let i = 0; i < images.length; i++) {
@@ -20,40 +18,83 @@ exports.create = (req, res) => {
 };
 
 exports.findAll = (req, res) => {
+  const { search } = req.query;
   RoomType.hasMany(Room, { foreignKey: "roomTypeId" });
   Room.belongsTo(RoomType, { foreignKey: "roomTypeId" });
   Room.hasMany(RoomImage, { foreignKey: "roomId" });
   RoomImage.belongsTo(Room, { foreignKey: "roomId" });
-  Room.findAll({
-    include: [RoomType, RoomImage],
-    order: [["roomNo", "ASC"]],
-  })
-    .then((data) => {
-      return res.status(200).json({ result: data });
+  if (search != null && search != "") {
+    Room.findAll({
+      include: [RoomType, RoomImage],
+      order: [["roomNo", "ASC"]],
+      where: {
+        [Op.or]: [{ roomNo: { [Op.like]: `%${search}%` } }],
+      },
     })
-    .catch((error) => {
-      return res.status(400).json({ result: error });
-    });
+      .then((data) => {
+        return res.status(200).json({ result: data });
+      })
+      .catch((error) => {
+        return res.status(400).json({ result: error });
+      });
+  } else {
+    Room.findAll({
+      include: [RoomType, RoomImage],
+      order: [["roomNo", "ASC"]],
+    })
+      .then((data) => {
+        return res.status(200).json({ result: data });
+      })
+      .catch((error) => {
+        return res.status(400).json({ result: error });
+      });
+  }
 };
 
 exports.findRoomMember = (req, res) => {
+  const { search } = req.query;
   RoomType.findAll()
     .then(async (data) => {
       if (data.length > 0) {
-        var rooms = [];
-        for (let i = 0; i < data.length; i++) {
-          RoomType.hasMany(Room, { foreignKey: "roomTypeId" });
-          Room.belongsTo(RoomType, { foreignKey: "roomTypeId" });
-          Room.hasMany(RoomImage, { foreignKey: "roomId" });
-          RoomImage.belongsTo(Room, { foreignKey: "roomId" });
-          var room = await Room.findAll({
-            include: [RoomType, RoomImage],
-            where: { roomTypeId: data[i].id },
-            order: [["roomNo", "ASC"]],
-          });
-          rooms.push({ roomType: data[i], rooms: room });
+        if (search != null && search != "") {
+          var rooms = [];
+          for (let i = 0; i < data.length; i++) {
+            RoomType.hasMany(Room, { foreignKey: "roomTypeId" });
+            Room.belongsTo(RoomType, { foreignKey: "roomTypeId" });
+            Room.hasMany(RoomImage, { foreignKey: "roomId" });
+            RoomImage.belongsTo(Room, { foreignKey: "roomId" });
+            var room = await Room.findAll({
+              include: [RoomType, RoomImage],
+              order: [["roomNo", "ASC"]],
+              where: {
+                roomTypeId: data[i].id,
+                [Op.or]: [
+                  { price: { [Op.like]: `%${search}%` } },
+                  { description: { [Op.like]: `%${search}%` } },
+                ],
+              },
+            });
+            rooms.push({ roomType: data[i], rooms: room });
+          }
+          return res.status(200).json({ result: rooms });
+        } else {
+          var rooms = [];
+          for (let i = 0; i < data.length; i++) {
+            RoomType.hasMany(Room, { foreignKey: "roomTypeId" });
+            Room.belongsTo(RoomType, { foreignKey: "roomTypeId" });
+            Room.hasMany(RoomImage, { foreignKey: "roomId" });
+            RoomImage.belongsTo(Room, { foreignKey: "roomId" });
+            var room = await Room.findAll({
+              include: [RoomType, RoomImage],
+              order: [["roomNo", "ASC"]],
+              where: {
+                roomTypeId: data[i].id,
+              },
+            });
+            rooms.push({ roomType: data[i], rooms: room });
+          }
+          return res.status(200).json({ result: rooms });
         }
-        return res.status(200).json({ result: rooms });
       } else {
         return res.status(200).json({ result: data });
       }

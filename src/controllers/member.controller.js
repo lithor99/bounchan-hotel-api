@@ -1,5 +1,6 @@
 const Member = require("../models/member.model");
 const jwt = require("jsonwebtoken");
+const { Op } = require("sequelize");
 require("dotenv").config();
 
 exports.create = async (req, res) => {
@@ -40,13 +41,33 @@ exports.login = (req, res) => {
 };
 
 exports.findAll = (req, res) => {
-  Member.findAndCountAll()
-    .then((data) => {
-      return res.status(200).json({ result: data });
+  const { search } = req.query;
+  if (search != null && search != "") {
+    Member.findAndCountAll({
+      where: {
+        [Op.or]: [
+          { name: { [Op.like]: `%${search}%` } },
+          { lastName: { [Op.like]: `%${search}%` } },
+          { email: { [Op.like]: `%${search}%` } },
+          { phoneNumber: { [Op.like]: `%${search}%` } },
+        ],
+      },
     })
-    .catch((error) => {
-      return res.status(400).json({ result: error });
-    });
+      .then((data) => {
+        return res.status(200).json({ result: data });
+      })
+      .catch((error) => {
+        return res.status(400).json({ result: error });
+      });
+  } else {
+    Member.findAndCountAll()
+      .then((data) => {
+        return res.status(200).json({ result: data });
+      })
+      .catch((error) => {
+        return res.status(400).json({ result: error });
+      });
+  }
 };
 
 exports.findOne = (req, res) => {
@@ -65,9 +86,9 @@ exports.checkEmail = (req, res) => {
   Member.findOne({ where: { email: email } })
     .then((data) => {
       if (data) {
-        return res.status(201).json({ result: data });
+        return res.status(200).json({ result: "email already exist" });
       } else {
-        return res.status(200).json({ result: data });
+        return res.status(201).json({ result: "email is not exist" });
       }
     })
     .catch((error) => {

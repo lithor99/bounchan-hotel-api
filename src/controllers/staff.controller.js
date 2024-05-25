@@ -1,5 +1,6 @@
 const Staff = require("../models/staff.model");
 const jwt = require("jsonwebtoken");
+const { Op } = require("sequelize");
 require("dotenv").config();
 
 exports.create = async (req, res) => {
@@ -39,13 +40,33 @@ exports.login = (req, res) => {
 };
 
 exports.findAll = (req, res) => {
-  Staff.findAndCountAll()
-    .then((data) => {
-      return res.status(200).json({ result: data });
+  const { search } = req.query;
+  if (search != null && search != "") {
+    Staff.findAndCountAll({
+      where: {
+        [Op.or]: [
+          { name: { [Op.like]: `%${search}%` } },
+          { lastName: { [Op.like]: `%${search}%` } },
+          { email: { [Op.like]: `%${search}%` } },
+          { phoneNumber: { [Op.like]: `%${search}%` } },
+        ],
+      },
     })
-    .catch((error) => {
-      return res.status(400).json({ result: error });
-    });
+      .then((data) => {
+        return res.status(200).json({ result: data });
+      })
+      .catch((error) => {
+        return res.status(400).json({ result: error });
+      });
+  } else {
+    Staff.findAndCountAll()
+      .then((data) => {
+        return res.status(200).json({ result: data });
+      })
+      .catch((error) => {
+        return res.status(400).json({ result: error });
+      });
+  }
 };
 
 exports.findOne = (req, res) => {
@@ -59,11 +80,23 @@ exports.findOne = (req, res) => {
     });
 };
 
+exports.checkEmail = (req, res) => {
+  const { email } = req.params;
+  Staff.findOne({ where: { email: email } })
+    .then((data) => {
+      if (data) {
+        return res.status(200).json({ result: "email already exist" });
+      } else {
+        return res.status(201).json({ result: "email is not exist" });
+      }
+    })
+    .catch((error) => {
+      return res.status(400).json({ result: error });
+    });
+};
+
 exports.update = (req, res) => {
   const id = req.params.id;
-  console.log("----------------------------");
-  console.log({ ...req.body });
-  console.log("----------------------------");
   Staff.update({ ...req.body }, { where: { id: id } })
     .then((data) => {
       return res.status(200).json({ result: data });

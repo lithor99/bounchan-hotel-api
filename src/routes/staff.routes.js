@@ -9,5 +9,6 @@ module.exports = (app) => {
   app.put("/staff/reset/password", controller.resetPassword);
   app.get("/staff", controller.findAll);
   app.get("/staff/:id", controller.findOne);
+  app.get("/staff/check/email/:email", controller.checkEmail);
   app.delete("/staff/:id", controller.delete);
 };
