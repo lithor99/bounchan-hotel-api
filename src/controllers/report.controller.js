@@ -22,24 +22,41 @@ exports.reportMember = (req, res) => {
 };
 
 exports.reportBook = (req, res) => {
-  const { startDate, endDate } = req.query;
+  const { startDate, endDate, status } = req.query;
   Book.hasMany(BookDetail, { foreignKey: "bookId" });
   BookDetail.belongsTo(Book, { foreignKey: "bookId" });
-
-  Book.findAndCountAll({
-    include: [BookDetail],
-    where: {
-      createdAt: {
-        [Op.between]: [new Date(startDate), new Date(endDate)],
+  if (status != null && status != "") {
+    Book.findAndCountAll({
+      include: [BookDetail],
+      where: {
+        status: status,
+        createdAt: {
+          [Op.between]: [new Date(startDate), new Date(endDate)],
+        },
       },
-    },
-  })
-    .then((data) => {
-      return res.status(200).json({ result: data });
     })
-    .catch((error) => {
-      return res.status(400).json({ result: error });
-    });
+      .then((data) => {
+        return res.status(200).json({ result: data });
+      })
+      .catch((error) => {
+        return res.status(400).json({ result: error });
+      });
+  } else {
+    Book.findAndCountAll({
+      include: [BookDetail],
+      where: {
+        createdAt: {
+          [Op.between]: [new Date(startDate), new Date(endDate)],
+        },
+      },
+    })
+      .then((data) => {
+        return res.status(200).json({ result: data });
+      })
+      .catch((error) => {
+        return res.status(400).json({ result: error });
+      });
+  }
 };
 
 exports.reportIncome = async (req, res) => {
