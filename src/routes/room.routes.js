@@ -8,4 +8,5 @@ module.exports = (app) => {
   app.get("/room/member", controller.findRoomMember);
   app.get("/room/:id", controller.findOne);
   app.delete("/room/:id", controller.delete);
+  app.delete("/room/image/:id", controller.deleteRoomImage);
 };
