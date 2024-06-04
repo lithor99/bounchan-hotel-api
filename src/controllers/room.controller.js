@@ -165,3 +165,14 @@ exports.delete = (req, res) => {
       return res.status(400).json({ result: error });
     });
 };
+
+exports.deleteRoomImage = (req, res) => {
+  const id = req.params.id;
+  RoomImage.destroy({ where: { id: id } })
+    .then((data) => {
+      return res.status(200).json({ result: data });
+    })
+    .catch((error) => {
+      return res.status(400).json({ result: error });
+    });
+};

@@ -22,19 +22,19 @@ admin.initializeApp({
   storageBucket: "gs://bounchan-app.appspot.com", // Replace this with your Firebase Storage bucket URL
 });
 
-//send check in notification to email when time is 10:00 by 24 hours format
-schedule.scheduleJob("0 10 * * *", () => {
-  // sendCheckInNotification();
+//send check in notification to email when time is 12:00 by 24 hours format
+schedule.scheduleJob("0 12 * * *", () => {
+  sendCheckInNotification();
 });
 
-//send check out notification to email when time is 12:00 by 24 hours format
-schedule.scheduleJob("0 12 * * *", () => {
-  // sendCheckOutNotification();
+//send check out notification to email when time is 10:00 by 24 hours format
+schedule.scheduleJob("0 10 * * *", () => {
+  sendCheckOutNotification();
 });
 
 //cancel booking auto and send email when time is 23:30  by 24 hours format
 schedule.scheduleJob("30 23 * * *", () => {
-  // cancelBookingAutomatic();
+  cancelBookingAutomatic();
 });
 
 const bucket = admin.storage().bucket();
