@@ -31,6 +31,20 @@ exports.findOne = (req, res) => {
     });
 };
 
+exports.checkRoomType = (req, res) => {
+  const { roomType } = req.params;
+  RoomType.findOne({ where: { name: roomType } })
+    .then((data) => {
+      if (data) {
+        return res.status(200).json({ result: data });
+      }
+      return res.status(201).json({ result: data });
+    })
+    .catch((error) => {
+      return res.status(400).json({ result: error });
+    });
+};
+
 exports.update = (req, res) => {
   const id = req.params.id;
   RoomType.update({ ...req.body }, { where: { id: id } })
