@@ -5,5 +5,6 @@ module.exports = (app) => {
   app.put("/room-type/:id", controller.update);
   app.get("/room-type", controller.findAll);
   app.get("/room-type/:id", controller.findOne);
+  app.get("/room-type/check-room-type/:roomType", controller.checkRoomType);
   app.delete("/room-type/:id", controller.delete);
 };

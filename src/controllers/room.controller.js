@@ -138,6 +138,20 @@ exports.findOne = (req, res) => {
     });
 };
 
+exports.checkRoomNo = (req, res) => {
+  const { roomNo } = req.params;
+  Room.findOne({ where: { roomNo: roomNo } })
+    .then((data) => {
+      if (data) {
+        return res.status(200).json({ result: data });
+      }
+      return res.status(201).json({ result: data });
+    })
+    .catch((error) => {
+      return res.status(400).json({ result: error });
+    });
+};
+
 exports.update = (req, res) => {
   const id = req.params.id;
   const { images } = req.body;
