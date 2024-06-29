@@ -3,6 +3,7 @@ const Member = require("../models/member.model");
 const Book = require("../models/book.model");
 const BookDetail = require("../models/book.detail.model");
 const { Op } = require("sequelize");
+const sequelize = require("../configs/db");
 
 exports.create = (req, res) => {
   const { id } = req.payload;
@@ -25,12 +26,20 @@ exports.create = (req, res) => {
         });
         if (room.status == 1) {
           Room.update(
-            { status: 2, lastCheckOut: item.checkOutDate },
+            {
+              status: 2,
+              lastCheckIn: item.checkInDate,
+              lastCheckOut: item.checkOutDate,
+            },
             { where: { id: item.rooms[i].roomId } }
           );
         } else if (room.status == 2) {
           Room.update(
-            { status: 3, lastCheckOut: item.checkOutDate },
+            {
+              status: 3,
+              lastCheckIn: item.checkInDate,
+              lastCheckOut: item.checkOutDate,
+            },
             { where: { id: item.rooms[i].roomId } }
           );
         }
@@ -212,12 +221,29 @@ exports.checkOut = (req, res) => {
         });
         if (room.status == 2) {
           room.update(
-            { status: 1, lastCheckOut: null },
+            { status: 1, lastCheckIn: null, lastCheckOut: null },
             { where: { id: bookDetails[i].roomId } }
           );
         }
         if (room.status == 3) {
-          room.update({ status: 2 }, { where: { id: bookDetails[i].roomId } });
+          const lastBook = await sequelize.query(
+            `SELECT b.checkInDate, b.checkOutDate
+            FROM books b
+            INNER JOIN book_details bd ON bd.bookId = b.id
+            WHERE bd.roomId = '${bookDetails[i].roomId}'
+            ORDER BY b.checkOutDate DESC LIMIT 1`,
+            {
+              type: sequelize.QueryTypes.SELECT,
+            }
+          );
+          room.update(
+            {
+              status: 2,
+              lastCheckIn: lastBook[0].checkInDate,
+              lastCheckOut: lastBook[0].checkOutDate,
+            },
+            { where: { id: bookDetails[i].roomId } }
+          );
         }
       }
       return res.status(200).json({ result: data });
@@ -230,12 +256,7 @@ exports.checkOut = (req, res) => {
 exports.manualBook = async (req, res) => {
   const { id } = req.payload;
   const { item } = req.body;
-  console.log("====================================");
-  console.log(item);
-  console.log("====================================2");
   const member = await Member.findOne({ where: { memberType: 0 } });
-  console.log(member);
-  console.log("====================================");
   Book.create({
     memberId: member.id,
     amount: item.amount,
