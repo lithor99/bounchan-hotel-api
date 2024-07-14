@@ -263,12 +263,20 @@ exports.manualBook = async (req, res) => {
         });
         if (room.status == 1) {
           Room.update(
-            { status: 2, lastCheckOut: item.checkOutDate },
+            {
+              status: 2,
+              lastCheckIn: item.checkInDate,
+              lastCheckOut: item.checkOutDate,
+            },
             { where: { id: item.rooms[i].roomId } }
           );
         } else if (room.status == 2) {
           Room.update(
-            { status: 3, lastCheckOut: item.checkOutDate },
+            {
+              status: 3,
+              lastCheckIn: item.checkInDate,
+              lastCheckOut: item.checkOutDate,
+            },
             { where: { id: item.rooms[i].roomId } }
           );
         }
