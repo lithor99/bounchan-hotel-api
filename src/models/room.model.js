@@ -28,6 +28,10 @@ const Room = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    lastCheckIn: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
     lastCheckOut: {
       type: DataTypes.DATE,
       allowNull: true,
