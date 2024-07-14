@@ -91,3 +91,62 @@ exports.reportIncome = async (req, res) => {
     return res.status(400).json({ result: error });
   }
 };
+
+exports.reportChart = async (req, res) => {
+  const { year } = req.query;
+  try {
+    let data = [];
+    for (let i = 1; i <= 12; i++) {
+      let month;
+      if (i < 10) {
+        month = `0${i}`;
+      }
+      const member = await sequelize.query(
+        `SELECT COUNT(id) AS count FROM members
+        WHERE LEFT(createdAt, 7) = '${year}-${month}'`,
+        {
+          type: sequelize.QueryTypes.SELECT,
+        }
+      );
+
+      const success = await sequelize.query(
+        `SELECT COUNT(id) AS count FROM books 
+        WHERE LEFT(createdAt, 7) = '${year}-${month}'
+        AND status != 4`,
+        {
+          type: sequelize.QueryTypes.SELECT,
+        }
+      );
+
+      const cancel = await sequelize.query(
+        `SELECT COUNT(id) AS count FROM books 
+        WHERE LEFT(createdAt, 7) = '${year}-${month}'
+        AND status = 4`,
+        {
+          type: sequelize.QueryTypes.SELECT,
+        }
+      );
+
+      const income = await sequelize.query(
+        `SELECT SUM(amount) AS amount FROM books
+        WHERE LEFT(createdAt, 7) = '${year}-${month}'
+        AND status != 4`,
+        {
+          type: sequelize.QueryTypes.SELECT,
+        }
+      );
+      data.push({
+        month: month,
+        member: member[0].count ?? 0,
+        book: {
+          success: success[0].count ?? 0,
+          cancel: cancel[0].count ?? 0,
+        },
+        income: income[0].amount ?? 0,
+      });
+    }
+    return res.status(200).json({ result: data });
+  } catch (error) {
+    return res.status(400).json({ result: error });
+  }
+};
