@@ -20,6 +20,10 @@ const Book = sequelize.define(
         key: "id",
       },
     },
+    billNo: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     amount: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -51,7 +55,7 @@ const Book = sequelize.define(
     status: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: 1, // 1:new, 2:checked in, 3:checked out
+      defaultValue: 1, // 1:new, 2:checked in, 3:checked out, 4:cancel
     },
   },
   {

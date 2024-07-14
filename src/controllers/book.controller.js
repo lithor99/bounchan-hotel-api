@@ -3,12 +3,17 @@ const Member = require("../models/member.model");
 const Book = require("../models/book.model");
 const BookDetail = require("../models/book.detail.model");
 const { Op } = require("sequelize");
+const sequelize = require("../configs/db");
+const { bill_no } = require("../functions/bill.no");
 
 exports.create = (req, res) => {
+  const billNo = bill_no();
+  console.log(billNo);
   const { id } = req.payload;
   const { item } = req.body;
   Book.create({
     memberId: id,
+    billNo: billNo,
     amount: item.amount,
     checkInDate: item.checkInDate,
     checkOutDate: item.checkOutDate,
@@ -228,6 +233,7 @@ exports.checkOut = (req, res) => {
 };
 
 exports.manualBook = async (req, res) => {
+  const billNo = bill_no();
   const { id } = req.payload;
   const { item } = req.body;
   console.log("====================================");
@@ -238,6 +244,7 @@ exports.manualBook = async (req, res) => {
   console.log("====================================");
   Book.create({
     memberId: member.id,
+    billNo: billNo,
     amount: item.amount,
     checkInDate: item.checkInDate,
     checkOutDate: item.checkOutDate,
