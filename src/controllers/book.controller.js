@@ -236,12 +236,10 @@ exports.manualBook = async (req, res) => {
   const billNo = bill_no();
   const { id } = req.payload;
   const { item } = req.body;
-  console.log("====================================");
+  console.log("----------------------");
   console.log(item);
-  console.log("====================================2");
+  console.log("----------------------");
   const member = await Member.findOne({ where: { memberType: 0 } });
-  console.log(member);
-  console.log("====================================");
   Book.create({
     memberId: member.id,
     billNo: billNo,
