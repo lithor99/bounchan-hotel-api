@@ -261,6 +261,9 @@ exports.manualBook = async (req, res) => {
   const billNo = bill_no();
   const { id } = req.payload;
   const { item } = req.body;
+  console.log("----------------------");
+  console.log(item);
+  console.log("----------------------");
   const member = await Member.findOne({ where: { memberType: 0 } });
   Book.create({
     memberId: member.id,
