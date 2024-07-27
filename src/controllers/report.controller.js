@@ -74,7 +74,7 @@ exports.reportIncome = async (req, res) => {
     for (let i = 0; i < dates.length; i++) {
       const income = await sequelize.query(
         `SELECT count(b.id) AS count, SUM(b.amount) AS amount FROM books b
-        WHERE LEFT(b.createdAt, 10)='${dates[i].date}'`,
+        WHERE (b.status=2 OR b.status=3) AND LEFT(b.createdAt, 10)='${dates[i].date}'`,
         {
           type: sequelize.QueryTypes.SELECT,
         }
@@ -130,7 +130,7 @@ exports.reportChart = async (req, res) => {
       const income = await sequelize.query(
         `SELECT SUM(amount) AS amount FROM books
         WHERE LEFT(createdAt, 7) = '${year}-${month}'
-        AND status != 4`,
+        AND (status=2 OR status=3)`,
         {
           type: sequelize.QueryTypes.SELECT,
         }
